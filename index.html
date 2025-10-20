@@ -4,33 +4,90 @@
   <meta charset="UTF-8" />
   <title>Image Resizer</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; }
-    input, button { margin: 0.5rem 0; }
-    canvas { display: block; margin-top: 1rem; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 { margin-bottom: 1rem; }
+    input, button {
+      display: block;
+      margin: 0.5rem 0;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+    }
+    button {
+      background: #0078d4;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    canvas {
+      margin-top: 1rem;
+      max-width: 100%;
+      border: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
-  <h2>Resize Image</h2>
+  <h2>📐 Image Resizer</h2>
   <input type="file" id="upload" accept="image/*" />
-  <label>Width: <input type="number" id="width" /></label>
-  <label>Height: <input type="number" id="height" /></label>
+  <label>Resize Percentage:
+    <input type="number" id="percent" value="100" min="1" max="500" />
+  </label>
   <button onclick="resizeImage()">Resize</button>
+  <button onclick="downloadImage()">Download</button>
   <canvas id="canvas"></canvas>
+
   <script>
     let img = new Image();
+    let originalWidth = 0;
+    let originalHeight = 0;
+
     document.getElementById('upload').onchange = e => {
       const file = e.target.files[0];
+      if (!file) return;
+      img.onload = () => {
+        originalWidth = img.width;
+        originalHeight = img.height;
+        drawImage(originalWidth, originalHeight);
+      };
       img.src = URL.createObjectURL(file);
     };
 
     function resizeImage() {
-      const w = parseInt(document.getElementById('width').value);
-      const h = parseInt(document.getElementById('height').value);
+      const percent = parseInt(document.getElementById('percent').value);
+      const newWidth = originalWidth * percent / 100;
+      const newHeight = originalHeight * percent / 100;
+      drawImage(newWidth, newHeight);
+    }
+
+    function drawImage(w, h) {
       const canvas = document.getElementById('canvas');
       const ctx = canvas.getContext('2d');
       canvas.width = w;
       canvas.height = h;
+      ctx.clearRect(0, 0, w, h);
       ctx.drawImage(img, 0, 0, w, h);
+    }
+
+    function downloadImage() {
+      const canvas = document.getElementById('canvas');
+      const link = document.createElement('a');
+      link.download = 'resized-image.png';
+      link.href = canvas.toDataURL();
+      link.click();
     }
   </script>
 </body>
