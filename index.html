@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Image Resizer</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input, button { margin: 0.5rem 0; }
+    canvas { display: block; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h2>Resize Image</h2>
+  <input type="file" id="upload" accept="image/*" />
+  <label>Width: <input type="number" id="width" /></label>
+  <label>Height: <input type="number" id="height" /></label>
+  <button onclick="resizeImage()">Resize</button>
+  <canvas id="canvas"></canvas>
+  <script>
+    let img = new Image();
+    document.getElementById('upload').onchange = e => {
+      const file = e.target.files[0];
+      img.src = URL.createObjectURL(file);
+    };
+
+    function resizeImage() {
+      const w = parseInt(document.getElementById('width').value);
+      const h = parseInt(document.getElementById('height').value);
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = w;
+      canvas.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+    }
+  </script>
+</body>
+</html>
